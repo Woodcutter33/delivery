@@ -1,6 +1,7 @@
 package libs.errs;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.UUID;
 
 public final class Guard {
@@ -36,6 +37,13 @@ public final class Guard {
 
     public static Error againstNullOrEmpty(UUID uuid, String paramName) {
         if (uuid == null || uuid.equals(EMPTY_UUID)) {
+            return GeneralErrors.valueIsRequired(paramName);
+        }
+        return null;
+    }
+
+    public static Error againstNullOrEmpty(Object object, String paramName) {
+        if (Objects.isNull(object)) {
             return GeneralErrors.valueIsRequired(paramName);
         }
         return null;
