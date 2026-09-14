@@ -26,12 +26,10 @@ public class Assignment extends BaseEntity<UUID> {
 
     @Getter
     @Embedded
-    @Column(name = "volume", nullable = false)
     private final Volume volume;
 
     @Getter
     @Embedded
-    @Column(name = "location")
     private final Location location;
 
     @Getter
@@ -48,8 +46,10 @@ public class Assignment extends BaseEntity<UUID> {
     }
 
     public static Result<Assignment, Error> create(UUID orderId, Volume volume, Location location) {
-        Error err = Guard.combine(Guard.againstNullOrEmpty(orderId, "orderId"),
-                Guard.againstNullOrEmpty(volume, "volume"), Guard.againstNullOrEmpty(location, "location"));
+        Error err = Guard.combine(
+                Guard.againstNullOrEmpty(orderId, "orderId"),
+                Guard.againstNullOrEmpty(volume, "volume"),
+                Guard.againstNullOrEmpty(location, "location"));
 
         if (err != null)
             return Result.failure(err);

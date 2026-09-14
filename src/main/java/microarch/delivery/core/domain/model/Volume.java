@@ -26,9 +26,9 @@ public class Volume extends ValueObject<Volume> {
 
     public static Result<Volume, Error> create(double volume) {
 
-        Error err = Guard.againstLessThan(volume, MIN_VOLUME, "volume");
+        Error err = Guard.againstLessOrEqual(volume, MIN_VOLUME, "volume");
         if (err != null)
-            return Result.failure(Error.of("volume.must.be.positive", "Volume must be greater than zero"));
+            return Result.failure(err);
 
         return Result.success(new Volume(volume));
     }
