@@ -15,24 +15,21 @@ import microarch.delivery.core.domain.model.Volume;
 import java.util.Objects;
 import java.util.UUID;
 
+@Getter
 @Entity
 @Table(name = "assigment")
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 public class Assignment extends BaseEntity<UUID> {
 
-    @Getter
     @Column(name = "order_Id", nullable = false)
     private final UUID orderId;
 
-    @Getter
     @Embedded
     private final Volume volume;
 
-    @Getter
     @Embedded
     private final Location location;
 
-    @Getter
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private AssignmentStatus status;
@@ -49,7 +46,8 @@ public class Assignment extends BaseEntity<UUID> {
         Error err = Guard.combine(
                 Guard.againstNullOrEmpty(orderId, "orderId"),
                 Guard.againstNullOrEmpty(volume, "volume"),
-                Guard.againstNullOrEmpty(location, "location"));
+                Guard.againstNullOrEmpty(location, "location")
+        );
 
         if (err != null)
             return Result.failure(err);
@@ -74,6 +72,10 @@ public class Assignment extends BaseEntity<UUID> {
         this.status = AssignmentStatus.COMPLETED;
 
         return UnitResult.success();
+    }
+
+    public boolean isActive() {
+        return this.status == AssignmentStatus.ASSIGNED;
     }
 
     public static final class Errors {

@@ -1,7 +1,8 @@
 package microarch.delivery.core.domain.model.order;
 
-public enum AssignmentStatus {
+public enum OrderStatus {
 
+    CREATED,
     ASSIGNED,
     COMPLETED
 
