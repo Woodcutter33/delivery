@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 import microarch.delivery.core.domain.model.Location;
 import microarch.delivery.core.domain.model.Volume;
 import microarch.delivery.core.domain.model.order.Assignment;
-import microarch.delivery.core.domain.model.order.Order;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,31 +62,38 @@ public class Courier extends Aggregate<UUID> {
         double currentVolume = assignments.stream().filter(Assignment::isActive)
                 .mapToDouble(assignment -> assignment.getVolume().getValue()).sum();
 
-        return currentVolume + newOrderVolume.getValue() < volume.getValue();
+        return currentVolume + newOrderVolume.getValue() <= volume.getValue();
     }
 
-    Result<Assignment, Error> takeOrder(Order order) {
-        Objects.requireNonNull(order, "order");
+    public Result<Assignment, Error> takeOrder(UUID orderId, Volume volume, Location location) {
+        Error err = Guard.combine(Guard.againstNullOrEmpty(orderId, "orderId"),
+                Guard.againstNullOrEmpty(volume, "volume"), Guard.againstNullOrEmpty(location, "location"));
 
-        if (!canTakeOrder(order.getVolume())) {
+        if (err != null)
+            return Result.failure(err);
+
+        if (!canTakeOrder(volume))
             return Result.failure(Errors.notEnoughCapacity());
-        }
 
-        Assignment assignment = Assignment.create(order.getId(), order.getVolume(), order.getLocation()).getValue();
+        boolean alreadyAssigned = assignments.stream().anyMatch(a -> a.getOrderId().equals(orderId));
 
+        if (alreadyAssigned)
+            return Result.failure(Errors.orderAlreadyAssigned(orderId));
+
+        Assignment assignment = Assignment.create(orderId, volume, location).getValue();
         assignments.add(assignment);
 
         return Result.success(assignment);
     }
 
-    public UnitResult<Error> completeAssigment(UUID assigmentId) {
-        Objects.requireNonNull(assigmentId, "assigmentId");
+    public UnitResult<Error> completeAssigment(UUID orderId) {
+        Objects.requireNonNull(orderId, "orderId");
 
-        Assignment assignment = assignments.stream().filter(a -> a.getId().equals(assigmentId)).findFirst()
+        Assignment assignment = assignments.stream().filter(a -> a.getOrderId().equals(orderId)).findFirst()
                 .orElse(null);
 
         if (assignment == null)
-            return UnitResult.failure(Errors.assignmentNotFound(assigmentId));
+            return UnitResult.failure(Errors.assignmentNotFound(orderId));
 
         return assignment.complete(location);
     }
@@ -112,12 +118,16 @@ public class Courier extends Aggregate<UUID> {
             return Error.of("courier.not.enough.capacity", "Courier does not have enough capacity");
         }
 
-        public static Error assignmentNotFound(UUID assignmentId) {
-            return Error.of("courier.assignment.not.found", "Assignment not found: " + assignmentId);
+        public static Error assignmentNotFound(UUID orderId) {
+            return Error.of("courier.assignment.not.found", "Assignment not found: " + orderId);
         }
 
         public static Error cannotMoveThatFar(int distance) {
             return Error.of("courier.cannot.move.that.far", "Courier can move only one step. Distance: " + distance);
+        }
+
+        public static Error orderAlreadyAssigned(UUID orderId) {
+            return Error.of("courier.order.already.exist", "Order already exist. OrderId: " + orderId);
         }
     }
 

@@ -6,7 +6,6 @@ import microarch.delivery.core.domain.model.Location;
 import microarch.delivery.core.domain.model.Volume;
 import microarch.delivery.core.domain.model.order.Assignment;
 import microarch.delivery.core.domain.model.order.AssignmentStatus;
-import microarch.delivery.core.domain.model.order.Order;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -75,10 +74,9 @@ public class CourierTest {
     void shouldTakeNewOrderWhenVolumeLessMax() {
         Location location = Location.create(3, 4).getValue();
         Volume volume = Volume.create(10).getValue();
-        Order order = Order.create(ORDER_ID, volume, location).getValue();
         Courier courier = Courier.create("John", location).getValue();
 
-        Assignment result = courier.takeOrder(order).getValue();
+        Assignment result = courier.takeOrder(ORDER_ID, volume, location).getValue();
 
         assertNotNull(result);
         assertEquals(ORDER_ID, result.getOrderId());
@@ -90,21 +88,20 @@ public class CourierTest {
     void shouldCompleteAssigment() {
         Location location1 = Location.create(3, 4).getValue();
         Volume volume1 = Volume.create(10).getValue();
-        Order order1 = Order.create(ORDER_ID, volume1, location1).getValue();
 
+        UUID orderId2 = UUID.randomUUID();
         Location location2 = Location.create(1, 4).getValue();
         Volume volume2 = Volume.create(2).getValue();
-        Order order2 = Order.create(ORDER_ID, volume2, location2).getValue();
 
         Courier courier = Courier.create("John", location1).getValue();
 
-        Assignment result1 = courier.takeOrder(order1).getValue();
-        Assignment result2 = courier.takeOrder(order2).getValue();
+        Assignment result1 = courier.takeOrder(ORDER_ID, volume1, location1).getValue();
+        Assignment result2 = courier.takeOrder(orderId2, volume2, location2).getValue();
 
         assertEquals(2, courier.getAssignments().size());
 
-        courier.completeAssigment(result1.getId());
-        courier.completeAssigment(result2.getId());
+        courier.completeAssigment(result1.getOrderId());
+        courier.completeAssigment(result1.getOrderId());
 
         assertEquals(AssignmentStatus.COMPLETED, result1.getStatus());
         assertEquals(AssignmentStatus.ASSIGNED, result2.getStatus());
