@@ -25,6 +25,7 @@ public class Location extends ValueObject<Location> {
 
     @Column(name = "coordinate_x")
     private final int x;
+
     @Column(name = "coordinate_y")
     private final int y;
 

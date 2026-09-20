@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 
 @Embeddable
 @Getter
@@ -19,10 +20,10 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Volume extends ValueObject<Volume> {
 
-    private static final double MIN_VOLUME = 0;
+    private static final double MIN_VOLUME = 0.0;
 
     @Column(name = "volume")
-    private final double volume;
+    private final double value;
 
     public static Result<Volume, Error> create(double volume) {
 
@@ -33,8 +34,20 @@ public class Volume extends ValueObject<Volume> {
         return Result.success(new Volume(volume));
     }
 
+    public Volume add(Volume addedVolume) {
+        Objects.requireNonNull(addedVolume, "addedVolume");
+
+        return new Volume(this.value + addedVolume.value);
+    }
+
+    public boolean isGreaterThen(Volume maxVolume) {
+        Objects.requireNonNull(maxVolume, "maxVolume");
+
+        return this.value > maxVolume.value;
+    }
+
     @Override
     protected Iterable<Object> equalityComponents() {
-        return List.of(volume);
+        return List.of(value);
     }
 }
