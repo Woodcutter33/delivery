@@ -4,7 +4,6 @@ import libs.errs.Error;
 import libs.errs.Result;
 import microarch.delivery.core.domain.model.Location;
 import microarch.delivery.core.domain.model.Volume;
-import microarch.delivery.core.domain.model.order.Assignment;
 import microarch.delivery.core.domain.model.order.AssignmentStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

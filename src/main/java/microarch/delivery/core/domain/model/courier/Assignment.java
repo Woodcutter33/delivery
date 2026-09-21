@@ -1,4 +1,4 @@
-package microarch.delivery.core.domain.model.order;
+package microarch.delivery.core.domain.model.courier;
 
 import jakarta.persistence.*;
 import libs.ddd.BaseEntity;
@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import microarch.delivery.core.domain.model.Location;
 import microarch.delivery.core.domain.model.Volume;
+import microarch.delivery.core.domain.model.order.AssignmentStatus;
 
 import java.util.Objects;
 import java.util.UUID;

@@ -3,8 +3,9 @@ package microarch.delivery.core.domain.services;
 import libs.errs.Error;
 import libs.errs.Guard;
 import libs.errs.Result;
+import libs.errs.UnitResult;
 import microarch.delivery.core.domain.model.courier.Courier;
-import microarch.delivery.core.domain.model.order.Assignment;
+import microarch.delivery.core.domain.model.courier.Assignment;
 import microarch.delivery.core.domain.model.order.Order;
 import microarch.delivery.core.domain.model.order.OrderStatus;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,11 @@ public class PurposeOrderDomainServiceImpl implements PurposeOrderDomainService 
 
         if (takeOrderResult.isFailure())
             return Result.failure(takeOrderResult.getError());
+
+        UnitResult<Error> assignOrder = order.assign();
+
+        if (assignOrder.isFailure())
+            return Result.failure(assignOrder.getError());
 
         return Result.success(selectedCourier.get());
     }

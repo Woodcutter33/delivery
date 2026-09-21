@@ -5,8 +5,8 @@ import libs.errs.Result;
 import microarch.delivery.core.domain.model.Location;
 import microarch.delivery.core.domain.model.Volume;
 import microarch.delivery.core.domain.model.courier.Courier;
-import microarch.delivery.core.domain.model.order.Assignment;
 import microarch.delivery.core.domain.model.order.Order;
+import microarch.delivery.core.domain.model.order.OrderStatus;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -48,6 +48,8 @@ public class PurposeOrderDomainServiceTest {
 
         assertTrue(result1.isSuccess());
         assertEquals(3, result1.getValue().getAssignments().size());
+        assertEquals(OrderStatus.ASSIGNED, newOrder.getStatus());
+        assertEquals(ORDER_ID_3, result1.getValue().getAssignments().get(2).getOrderId());
 
         Order newNewOrder = Order.create(ORDER_ID_4, volume4, location4).getValue();
 
@@ -55,10 +57,12 @@ public class PurposeOrderDomainServiceTest {
 
         assertTrue(result2.isSuccess());
         assertEquals(1, result2.getValue().getAssignments().size());
+        assertEquals(OrderStatus.ASSIGNED, newNewOrder.getStatus());
+        assertEquals(ORDER_ID_4, result2.getValue().getAssignments().getFirst().getOrderId());
     }
 
     @Test
-    void shouldReturnErrorWhenCouriersNotFound() {
+    void shouldReturnErrorWhenNotFreeCouriers() {
         Volume volume1 = Volume.create(10).getValue();
         Volume volume2 = Volume.create(9).getValue();
         Volume volume3 = Volume.create(2).getValue();
@@ -67,11 +71,11 @@ public class PurposeOrderDomainServiceTest {
         Location location2 = Location.create(3, 4).getValue();
         Location location3 = Location.create(1, 3).getValue();
 
-        Order order3 = Order.create(ORDER_ID_3, volume3, location3).getValue();
-
         Courier courier = Courier.create("Ivan", location1).getValue();
         courier.takeOrder(ORDER_ID_1, volume1, location1).getValue();
         courier.takeOrder(ORDER_ID_2, volume2, location2).getValue();
+
+        Order order3 = Order.create(ORDER_ID_3, volume3, location3).getValue();
 
         List<Courier> couriers = List.of(courier);
 
@@ -79,5 +83,25 @@ public class PurposeOrderDomainServiceTest {
         Result<Courier, Error> result = service.purposeOrder(order3, couriers);
 
         assertTrue(result.isFailure());
+        assertEquals("no.free.couriers", result.getError().getCode());
+    }
+
+    @Test
+    void shouldReturnErrorWhenCouriersWhenNotValidStatus() {
+        Volume volume1 = Volume.create(10).getValue();
+        Location location1 = Location.create(1, 2).getValue();
+
+        Order order = Order.create(ORDER_ID_1, volume1, location1).getValue();
+        order.assign();
+
+        Courier courier = Courier.create("Ivan", location1).getValue();
+
+        List<Courier> couriers = List.of(courier);
+
+        PurposeOrderDomainService service = new PurposeOrderDomainServiceImpl();
+        Result<Courier, Error> result = service.purposeOrder(order, couriers);
+
+        assertTrue(result.isFailure());
+        assertEquals("not.valid.order.tatus", result.getError().getCode());
     }
 }
