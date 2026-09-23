@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface PurposeOrderDomainService {
 
-    Result<Courier, Error> purposeOrder (Order order, List<Courier> couriers);
+    Result<Courier, Error> purposeOrder(Order order, List<Courier> couriers);
 }
