@@ -47,7 +47,7 @@ public class Order extends Aggregate<UUID> {
         return Result.success(new Order(id, volume, location));
     }
 
-    UnitResult<Error> assign() {
+    public UnitResult<Error> assign() {
         if (status != OrderStatus.CREATED)
             return UnitResult.failure(Errors.cannotAssign(status));
 
@@ -56,7 +56,7 @@ public class Order extends Aggregate<UUID> {
         return UnitResult.success();
     }
 
-    UnitResult<Error> complete() {
+    public UnitResult<Error> complete() {
         if (status != OrderStatus.ASSIGNED)
             return UnitResult.failure(Errors.cannotComplete(status));
 
