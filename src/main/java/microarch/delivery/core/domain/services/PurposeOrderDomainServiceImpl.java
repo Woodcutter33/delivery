@@ -20,10 +20,8 @@ public class PurposeOrderDomainServiceImpl implements PurposeOrderDomainService 
 
     @Override
     public Result<Courier, Error> purposeOrder(Order order, List<Courier> couriers) {
-        Error err = Guard.combine(
-                Guard.againstNullOrEmpty(order, "order"),
-                Guard.againstNullOrEmpty(couriers, "couriers")
-        );
+        Error err = Guard.combine(Guard.againstNullOrEmpty(order, "order"),
+                Guard.againstNullOrEmpty(couriers, "couriers"));
 
         if (err != null)
             return Result.failure(err);
@@ -31,22 +29,16 @@ public class PurposeOrderDomainServiceImpl implements PurposeOrderDomainService 
         if (OrderStatus.CREATED != order.getStatus())
             return Result.failure(Errors.notValidStatus(order.getStatus()));
 
-        Optional<Courier> selectedCourier = couriers.stream()
-                .filter(courier -> courier.canTakeOrder(order.getVolume()))
-                .min(Comparator.comparingInt(
-                        courier -> courier.getLocation().distanceTo(order.getLocation())
-                ));
+        Optional<Courier> selectedCourier = couriers.stream().filter(courier -> courier.canTakeOrder(order.getVolume()))
+                .min(Comparator.comparingInt(courier -> courier.getLocation().distanceTo(order.getLocation())));
 
         if (selectedCourier.isEmpty())
             return Result.failure(Errors.noFreeCouriers(order.getId()));
 
         Courier courier = selectedCourier.get();
 
-        Result<Assignment, Error> takeOrderResult = courier.takeOrder(
-                order.getId(),
-                order.getVolume(),
-                order.getLocation()
-        );
+        Result<Assignment, Error> takeOrderResult = courier.takeOrder(order.getId(), order.getVolume(),
+                order.getLocation());
 
         if (takeOrderResult.isFailure())
             return Result.failure(takeOrderResult.getError());
