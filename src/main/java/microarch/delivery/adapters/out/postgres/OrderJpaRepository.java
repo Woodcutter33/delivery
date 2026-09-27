@@ -14,4 +14,6 @@ public interface OrderJpaRepository extends JpaRepository<Order, UUID> {
 
     List<Order> findAllByStatusOrderByIdAsc(OrderStatus status);
 
+    List<Order> findAllByStatusInOrderByIdAsc(List<OrderStatus> statuses);
+
 }
