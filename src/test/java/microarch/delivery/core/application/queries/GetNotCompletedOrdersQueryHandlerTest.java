@@ -48,10 +48,8 @@ class GetNotCompletedOrdersQueryHandlerTest {
         Result<List<GetNotCompletedOrdersResponse>, Error> result = handler.handle();
 
         assertTrue(result.isSuccess());
-        assertEquals(
-                List.of(new GetNotCompletedOrdersResponse(created.getId(), created.getLocation()),
-                        new GetNotCompletedOrdersResponse(assigned.getId(), assigned.getLocation())),
-                result.getValue());
+        assertEquals(List.of(new GetNotCompletedOrdersResponse(created.getId(), 1, 2),
+                new GetNotCompletedOrdersResponse(assigned.getId(), 3, 4)), result.getValue());
         assertEquals(OrderStatus.CREATED, created.getStatus());
         assertEquals(OrderStatus.ASSIGNED, assigned.getStatus());
 

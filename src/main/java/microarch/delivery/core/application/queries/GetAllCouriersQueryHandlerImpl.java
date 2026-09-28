@@ -18,7 +18,8 @@ public class GetAllCouriersQueryHandlerImpl implements GetAllCouriersQueryHandle
     @Transactional(readOnly = true)
     public Result<List<GetAllCouriersResponse>, Error> handle() {
         List<GetAllCouriersResponse> allCouriersResponse = repository.findAll().stream()
-                .map(courier -> new GetAllCouriersResponse(courier.getId(), courier.getName(), courier.getLocation()))
+                .map(courier -> new GetAllCouriersResponse(courier.getId(), courier.getName(),
+                        courier.getLocation().getX(), courier.getLocation().getY()))
                 .toList();
 
         return Result.success(allCouriersResponse);

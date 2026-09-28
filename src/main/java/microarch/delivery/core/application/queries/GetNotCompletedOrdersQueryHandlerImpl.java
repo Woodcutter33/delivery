@@ -20,7 +20,9 @@ public class GetNotCompletedOrdersQueryHandlerImpl implements GetNotCompletedOrd
     public Result<List<GetNotCompletedOrdersResponse>, Error> handle() {
 
         List<GetNotCompletedOrdersResponse> ordersResponses = repository.findNotCompleted().stream()
-                .map(order -> new GetNotCompletedOrdersResponse(order.getId(), order.getLocation())).toList();
+                .map(order -> new GetNotCompletedOrdersResponse(order.getId(), order.getLocation().getX(),
+                        order.getLocation().getY()))
+                .toList();
 
         return Result.success(ordersResponses);
     }
