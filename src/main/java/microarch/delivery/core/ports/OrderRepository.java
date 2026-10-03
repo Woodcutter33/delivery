@@ -18,4 +18,6 @@ public interface OrderRepository {
 
     List<Order> findAllAssigned();
 
+    List<Order> findNotCompleted();
+
 }
