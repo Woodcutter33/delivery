@@ -1,4 +1,4 @@
-package microarch.delivery.core.application.shedulers;
+package microarch.delivery.adapters.in.shedulers;
 
 import org.quartz.*;
 import org.springframework.context.annotation.Bean;

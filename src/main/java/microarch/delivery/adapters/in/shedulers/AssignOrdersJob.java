@@ -1,4 +1,4 @@
-package microarch.delivery.core.application.shedulers;
+package microarch.delivery.adapters.in.shedulers;
 
 import lombok.RequiredArgsConstructor;
 import microarch.delivery.core.application.commands.AssignOrderCommandHandler;

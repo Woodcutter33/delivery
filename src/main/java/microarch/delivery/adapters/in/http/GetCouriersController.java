@@ -30,9 +30,6 @@ public class GetCouriersController implements GetCouriersApi {
 
         List<GetAllCouriersResponse> allCouriersResponses = handle.getValue();
 
-        if (allCouriersResponses.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-
         List<Courier> couriersList = mapper.toCouriers(allCouriersResponses);
 
         return ResponseEntity.ok(couriersList);

@@ -34,7 +34,7 @@ public class CreateOrderController implements CreateOrderApi {
         if (handle.isFailure())
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
 
-        CreateOrderResponse response = new CreateOrderResponse(command.getOrderID());
+        CreateOrderResponse response = new CreateOrderResponse(handle.getValue());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
