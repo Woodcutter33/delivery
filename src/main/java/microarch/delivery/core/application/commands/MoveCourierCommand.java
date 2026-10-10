@@ -6,7 +6,6 @@ import libs.errs.Result;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import microarch.delivery.core.domain.model.Location;
 
 import java.util.UUID;
 
@@ -16,14 +15,16 @@ public final class MoveCourierCommand {
 
     private final UUID courierId;
 
-    private final Location location;
+    private final int x;
 
-    public static Result<MoveCourierCommand, Error> create(UUID courierId, Location location) {
-        Error err = Guard.combine(Guard.againstNullOrEmpty(courierId, "courierId"),
-                Guard.againstNullOrEmpty(location, "location"));
+    private final int y;
+
+    public static Result<MoveCourierCommand, Error> create(UUID courierId, Integer x, Integer y) {
+        Error err = Guard.combine(Guard.againstNullOrEmpty(courierId, "courierId"), Guard.againstLessThan(x, 1, "x"),
+                Guard.againstLessThan(y, 1, "y"));
         if (err != null)
             return Result.failure(err);
 
-        return Result.success(new MoveCourierCommand(courierId, location));
+        return Result.success(new MoveCourierCommand(courierId, x, y));
     }
 }
