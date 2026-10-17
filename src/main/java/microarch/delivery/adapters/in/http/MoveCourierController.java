@@ -34,7 +34,6 @@ public class MoveCourierController implements MoveCourierApi {
         if (handle.isFailure())
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
 
-
         return ResponseEntity.ok().build();
     }
 }
