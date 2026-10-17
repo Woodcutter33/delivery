@@ -21,19 +21,14 @@ public class BasketConfirmedConsumer {
     @KafkaListener(topics = "${app.kafka.basket-events-topic}")
     public void listen(byte[] message) {
 
-
         try {
-            BasketEventsProto.BasketConfirmedIntegrationEvent event = BasketEventsProto.BasketConfirmedIntegrationEvent.parseFrom(message);
+            BasketEventsProto.BasketConfirmedIntegrationEvent event = BasketEventsProto.BasketConfirmedIntegrationEvent
+                    .parseFrom(message);
 
             Result<CreateOrderCommand, Error> commandResult = CreateOrderCommand.create(
-                    UUID.fromString(event.getBasketId()),
-                    event.getAddress().getCountry(),
-                    event.getAddress().getCity(),
-                    event.getAddress().getStreet(),
-                    event.getAddress().getHouse(),
-                    event.getAddress().getApartment(),
-                    event.getVolume()
-            );
+                    UUID.fromString(event.getBasketId()), event.getAddress().getCountry(), event.getAddress().getCity(),
+                    event.getAddress().getStreet(), event.getAddress().getHouse(), event.getAddress().getApartment(),
+                    event.getVolume());
 
             if (commandResult.isFailure())
                 throw new RuntimeException("Invalid command: " + commandResult.getError());
