@@ -1,5 +1,6 @@
 package microarch.delivery.core.application.commands;
 
+import libs.ddd.DomainEventPublisher;
 import libs.errs.Error;
 import libs.errs.Result;
 import libs.errs.UnitResult;
@@ -12,6 +13,7 @@ import microarch.delivery.core.ports.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +22,7 @@ public class AssignOrderCommandHandlerImpl implements AssignOrderCommandHandler 
     private final OrderRepository orderRepository;
     private final CourierRepository courierRepository;
     private final PurposeOrderDomainService service;
+    private final DomainEventPublisher domainEventPublisher;
 
     @Override
     @Transactional
@@ -39,6 +42,9 @@ public class AssignOrderCommandHandlerImpl implements AssignOrderCommandHandler 
 
         courierRepository.update(selectedCourier.getValue());
         orderRepository.update(order);
+
+        domainEventPublisher.publish(List.of(order));
+
         return UnitResult.success();
     }
 }
